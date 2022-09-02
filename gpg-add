@@ -1,0 +1,65 @@
+#! /usr/bin/python3
+
+#
+# gpg equivalent of ssh-add
+#
+# This only works with GnuPG 2.2 or higher since the --with-keygrip
+# option doesn't work on 2.0 even though it is documented.
+#
+# The python-gnupg version must be greater than 0.4.9
+#
+import sys
+import base64
+import os
+import gnupg
+import getpass
+import subprocess
+
+debug=True
+
+gnupgvers=gnupg.__version__.split('.')
+if ( int(gnupgvers[1]) == 4 ):
+    if ( int(gnupgvers[2]) < 9 ):
+        print("python-gnupg version {} is below 0.4.9".format(gnupg.__version__))
+        sys.exit(1)
+if ( int(gnupgvers[1]) < 4 ):
+    print("python-gnupg version {} is below 0.4.9".format(gnupg.__version__))
+    sys.exit(1)
+        
+def usage():
+    print('usage: {} <email>'.format(sys.argv[0]))
+    print('  where')
+    print('     email: email address of the key to load')
+    
+# Get the keygrip for the key to load
+if ( len(sys.argv) < 2 ):
+    usage()
+    sys.exit(0)
+    
+keyemail = sys.argv[1]
+if ( debug ):
+    print("Key e-mail {}".format(keyemail))
+
+# Get private keys
+gpg=gnupg.GPG()
+privatekeys = gpg.list_keys(True)
+if ( debug ):
+    print("Keys returned: {}".format(len(privatekeys)))
+    
+for index in range(len(privatekeys)):
+    if ( debug ):
+        print("Key: {}, e-mail {}".format(privatekeys[index]['keyid'],privatekeys[index]['uids'][0]))
+        
+    if ( keyemail in privatekeys[index]['uids'][0] ):
+        print("Key: {} keygrip: {}".format(privatekeys[index]['keyid'],privatekeys[index]['keygrip']))
+        keygrip=privatekeys[index]['keygrip']
+        
+# Read in passphrase
+mypass = getpass.getpass("Enter passphrase: ")
+# Pipe the passphrase to the gpg-preset-passphrase command
+gpgpreset = subprocess.Popen([ '/usr/libexec/gpg-preset-passphrase', '--preset', keygrip ], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+gpgpreset.communicate(bytes(mypass,encoding='utf8'))
+if ( debug ):
+    print("Return code: {}".format(gpgpreset.returncode))
+    
+sys.exit(0)

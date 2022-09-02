@@ -1,0 +1,9 @@
+*~
+*.jpg
+*.png
+*.pnm
+*.tar.gz
+# Emacs files
+\#*
+.\#*
+*.retry
