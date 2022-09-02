@@ -41,6 +41,7 @@ if ( debug ):
     print("Key e-mail {}".format(keyemail))
 
 # Get private keys
+gpg=gnupg.GPG()
 privatekeys = gpg.list_keys(True)
 if ( debug ):
     print("Keys returned: {}".format(len(privatekeys)))
