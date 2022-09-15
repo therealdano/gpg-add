@@ -18,22 +18,21 @@ import getopt
 
 debug=True
 
-gnupgvers=gnupg.__version__.split('.')
-if ( int(gnupgvers[1]) == 4 ):
-    if ( int(gnupgvers[2]) < 9 ):
+pythongnupgvers=gnupg.__version__.split('.')
+if ( int(pythongnupgvers[1]) == 4 ):
+    if ( int(pythongnupgvers[2]) < 9 ):
         print("python-gnupg version {} is below 0.4.9".format(gnupg.__version__))
         sys.exit(1)
-if ( int(gnupgvers[1]) < 4 ):
+if ( int(pythongnupgvers[1]) < 4 ):
     print("python-gnupg version {} is below 0.4.9".format(gnupg.__version__))
     sys.exit(1)
-        
+
 def usage():
     print('usage: {} [--prefix path] <email>'.format(sys.argv[0]))
     print('  where')
     print('     email: email address of the key to load')
     print('     path: Prefix path to gpg binary, e.g.,')
     print('           /opt/gnupg22/bin/gpg would be --prefix /opt/gnupg22')
-    
 # Get the keygrip for the key to load
 if ( len(sys.argv) < 2 ):
     usage()
