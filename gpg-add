@@ -14,6 +14,7 @@ import os
 import gnupg
 import getpass
 import subprocess
+import getopt
 
 debug=True
 
@@ -27,9 +28,11 @@ if ( int(gnupgvers[1]) < 4 ):
     sys.exit(1)
         
 def usage():
-    print('usage: {} <email>'.format(sys.argv[0]))
+    print('usage: {} [--prefix path] <email>'.format(sys.argv[0]))
     print('  where')
     print('     email: email address of the key to load')
+    print('     path: Prefix path to gpg binary, e.g.,')
+    print('           /opt/gnupg22/bin/gpg would be --prefix /opt/gnupg22')
     
 # Get the keygrip for the key to load
 if ( len(sys.argv) < 2 ):
@@ -40,6 +43,9 @@ keyemail = sys.argv[1]
 if ( debug ):
     print("Key e-mail {}".format(keyemail))
 
+# Get options
+try:
+    opts, args = getopt.getopt(sys.argv,"p:"
 # Get private keys
 gpg=gnupg.GPG()
 privatekeys = gpg.list_keys(True)
